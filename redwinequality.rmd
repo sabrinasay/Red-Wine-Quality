@@ -1,0 +1,574 @@
+Red Wine Quality by Sabrina Sayers
+========================================================
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Load all of the packages that you end up using in your analysis in this code
+# chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk. This
+# prevents the code from displaying in the knitted HTML output. You should set
+# echo=FALSE for all code chunks in your file, unless it makes sense for your
+# report to show the code that generated a particular plot.
+
+# The other parameters for "message" and "warning" should also be set to FALSE
+# for other code chunks once you have verified that each plot comes out as you
+# want it to. This will clean up the flow of your report.
+#install.packages("ggplot2", dependencies = T) 
+#install.packages("dplyr", dependencies = T)
+#install.packages('GGally')
+#install.packages('scales')
+#install.packages('lattice')
+#install.packages('MASS')
+#install.packages('car')
+#install.packages('reshape2')
+#install.packages('plyr')
+#install.packages('RColorBrewer', dependencies = TRUE)
+
+library(ggplot2)
+library(GGally)
+library(scales)
+library(memisc)
+library(RColorBrewer)
+```
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+mydata <- read.csv('wineQualityReds.csv')
+```
+
+> This report explores how the chemical properties of red wines influences their quality.
+
+# Univariate Plots Section
+
+```{r echo=FALSE, Univariate_Plots}
+str(mydata)
+```
+
+>This is the basic structure of the Red Wine Quality dataset. There are 13 variables and 1599 observations. 
+
+```{r echo=FALSE}
+summary(mydata)
+```
+
+>This is a summary of the data set. It shows each variable and their key data statistics that are helpful in understanding the data. 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=fixed.acidity),data = mydata) +
+  geom_histogram()
+```
+
+>Fixed acidity measured in this data set is tartaric acid. It is important because it helps chemically stabalize the wine and contributes to it's taste.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=volatile.acidity),data = mydata) +
+  geom_histogram()
+
+```
+
+>Volatile acidity in high levels can make the wine taste vinegary. It is generally accepted that levels over 1.2 g cause an unpleasant taste. The majority of our wines are below this threshold as supported by our plot and summary data. The volatile acidity measured in this data set is acetic acid.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=citric.acid),data = mydata) +
+  geom_histogram()
+
+```
+
+>Citric acid usually is only used in small amounts because of the strong citric flavor it can add. It is usually added after fermentation to boost the acidity of the wine, if needed.
+>The levels of acids in wine greatly contribute to its sour or tart taste. Too much acid and the wine will be too sour, but too little and the wine will taste dull. 
+>The plots for fixed, citric and volatile acidity appear to go along with the idea that wine shouldn't have too much or too little acid.
+>It would be interesting to find out what the acid levels are for the wines considered higher and lower quality. Are the levels consistent with the quality ratings? Is a quality wine more tart or dull?
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=residual.sugar),data = mydata) +
+  geom_histogram()
+```
+
+```{r echo=FALSE}
+summary(mydata$residual.sugar)
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=residual.sugar),data = mydata) +
+  geom_histogram(binwidth = 1, color = 'black', fill = '#099DD9') +
+  scale_x_continuous(limits = c(0, 5))
+
+```
+
+
+>In the original plot the data had a long tail which made it hard to see the results for the majority of the data. In the second plot I zoomed in on the results between 0 and 5. Now you can clearly see most of the results fall in the 2-3 range, which is also supported by the summary data. I also took the opportunity to try adding color to plots. 
+>Wine, especially red wine, is not known for being overly sweet. Although some sugar is needed to help balance the tartness from the acids. 
+>Often sweet wines are considered lower qualiaty wines. It would be interesting to find out the residual sugar levels compared to the wine quality data. Also, the levels of acids to sugars could possibly show the preferences for sweeter or tartier wines. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=chlorides),data = mydata) +
+  geom_histogram()
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=chlorides),data = mydata) +
+  geom_histogram(binwidth = .001, color = 'black', fill = '#099DD9') +
+  scale_x_continuous(limits = c(0, .15))
+
+```
+
+>Chlorides are salts, which in wine helps balance out the sweetness by adding a savory layer to the taste. Could there be a matching trend when comparing chlorides and residual sugars?
+>The first plot for chlorides has long tail data. Since most of the data is in the .05 to .10 range, I made another plot to only show 0 to .15 results and to add color. I think this really helps make clearer the distribution of the chloride data.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=free.sulfur.dioxide),data = mydata) +
+  geom_histogram()
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=total.sulfur.dioxide),data = mydata) +
+  geom_histogram()
+
+```
+
+>Many believe that sulfites in wine cause headaches, but there is no research data to support this. It would be very interesting to see the instance of reported headaches compared to the sulfites in wine, but that data is not included in this data set. 
+>The main purpose of sulfites in wine is to prevent it from going bad.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=sulphates),data = mydata) +
+  geom_histogram()
+
+```
+
+>The info file provided with this data set says sulphates are additives that are used as antimicrobials and antioxidants. In my research all the information I found said that sulphates are not an important component in wine making. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=density),data = mydata) +
+  geom_histogram()
+
+```
+
+>According to the info file provided with this data set the density of wine is close the density of water. It can be calculated by adding the alcohol, sugar, and water concentrations. The water measurements for each wine is not inlcuded in this data set. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=pH),data = mydata) +
+  geom_histogram()
+
+```
+
+```{r echo=FALSE}
+summary(mydata$pH)
+
+```
+
+>The measure of pH shows how acidic or base a liquid is. The scale is 0 to 14 with 7 being neutral. The lower the pH the more tart or sour the liquid tastes. Wine normally falls in a range of 3-4. This plot appears to support this. It could be interesting to compare the pH levels to the acidity levels in the data set. As the acidity levels rise do the pH levels fall?
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=alcohol),data = mydata) +
+  geom_histogram()
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+mean(mydata$alcohol)
+```
+
+```{r echo=FALSE}
+summary(mydata$alcohol)
+
+```
+
+>The reported average content of alchohol by volume of wine is 11.6% (from livescience.com). This plot appears to show more wines on the lower side of this average. When I run the mean function on the alcohol data it returns 10.42%. 
+>The flavor of a wine is influenced by the alcohol content along with the acid and sugar content. This should translate to wines that have a higher acid and/or sugar content also having a higher alcohol content. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=quality),data = mydata,) +
+  geom_histogram(fill = '#5760AB') +
+  xlab('Quality Score') +
+  ylab('Wines Meeting Score')
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=quality),data = mydata) +
+  geom_histogram(bins = 11, fill = '#5760AB') +
+  xlab('Quality Score') +
+  ylab('Wines Meeting Score') +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+
+```
+
+```{r echo=FALSE}
+summary(mydata$quality)
+
+```
+
+>I used this plot to try out some of the available options to improve the look and formatting of the plots. I changed the bins to exactly 11 because the scale of quality is 0-10 and added breaks for each score. I did not see much difference in the plot with this change because there are no values in in bins 1-2 and 9-10. I added color and changed the titles of the x and y axes. 
+>On this scale of quality most of the wines fall in the 5-6 range. The lowest rating is 3 and the highest is 8.
+
+# Univariate Analysis
+
+### What is the structure of your dataset?
+>The data set contains 1599 different wines. Each wine is scored on a scale of 0-10 for quality. Including quality there are 12 variables. These variables are the chemical properties that make up the wines and include; fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfer dioxide, total sulfur dioxide, density, pH, sulphates, and alchohol. The quality variable is based on sensory data, all the other variables are based on physicochemical tests.
+
+>Other observations:
+
+>On a scale of 0-10 for quality, with 0 being the worst and 10 the best, most wines scored a 5 or 6.
+
+>The wines in this data set avergaged a lower alcohol content than the generally accepted average of 11.6%.
+
+>Normally pH for wines falls in the 3-4 range and the wines in this data set on average matched this. 
+
+### What is/are the main feature(s) of interest in your dataset?
+>The main feature in the data set is the quality ratings of the wines. It will be interesting to see what are the commons features for wines that are rated poor, good, or excellent.
+
+### What other features in the dataset do you think will help support your \investigation into your feature(s) of interest?
+>I think the following variables may help support my investigation; fixed acids, volatile acids, citirc acids, residual sugars, chlorides, pH, and alcohol.
+
+### Did you create any new variables from existing variables in the dataset?
+>No
+
+### Of the features you investigated, were there any unusual distributions? \Did you perform any operations on the data to tidy, adjust, or change the form \of the data? If so, why did you do this?
+>The residual sugar and chlorides plots had long tails which made it hard to see the results for the majority of the data. So I created additional plots that paired down the data which help make the more clear the distribution of the majority of the data in each variable.
+
+# Bivariate Plots Section
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Bivariate_Plots}
+ggpairs(mydata, 
+        lower = list(continuous = wrap("points", shape = I('.'))),
+        upper = list(combo = wrap("box", outlier.shape = I('.'))),
+        axisLabels = 'internal')
+
+```
+
+>Correlation matrix of plots using ggpairs
+
+```{r echo=FALSE}
+ggplot(aes(x = fixed.acidity, y = volatile.acidity), data = mydata) +
+  geom_point()
+
+```
+
+```{r echo=FALSE}
+head(sort(table(mydata$volatile.acidity), decreasing = T))
+head(sort(table(mydata$fixed.acidity), decreasing = T))
+
+```
+
+
+```{r echo=FALSE}
+ggplot(aes(x = fixed.acidity, y = volatile.acidity), data = mydata) +
+  geom_point(alpha = 1/5, position = 'jitter')
+```
+
+```{r echo=FALSE}
+ggplot(aes(x = fixed.acidity, y = citric.acid), data = mydata) +
+  geom_point()
+
+```
+
+```{r echo=FALSE}
+head(sort(table(mydata$citric.acid), decreasing = T))
+head(sort(table(mydata$fixed.acidity), decreasing = T))
+
+```
+
+
+```{r echo=FALSE}
+ggplot(aes(x = fixed.acidity, y = citric.acid), data = mydata) +
+  geom_point(alpha = 1/5, position = 'jitter')
+
+```
+
+```{r echo=FALSE}
+ggplot(aes(x = volatile.acidity, y = citric.acid), data = mydata) +
+  geom_point()
+
+```
+
+```{r echo=FALSE}
+head(sort(table(mydata$citric.acid), decreasing = T))
+head(sort(table(mydata$volatile.acidity), decreasing = T))
+
+```
+
+```{r echo=FALSE}
+ggplot(aes(x = volatile.acidity, y = citric.acid), data = mydata) +
+  geom_point(alpha = 1/5, position = 'jitter') 
+
+```
+
+>I was curious to see if the three measures of acidity aligned in any way. At first the plots did have some overplotting, so I adjusted the transparency to 1 dot for every 5 instances and added jitter. I also ran the table function on each to show the first few counts for each data point to support the need for this. 
+>The fixed acidity and volatile acidity do seem to have a decent amount of similarity. But when comparing citric acid to volatile and fixed acidity, they did not share as much similarity as I expected. 
+
+```{r echo=FALSE}
+ggplot(aes(x = quality, y = fixed.acidity), data = mydata) +
+  geom_point(alpha = 1/5) +
+  geom_smooth(method = 'lm', color = 'purple')
+
+```
+
+```{r echo=FALSE}
+ggplot(aes(x = quality, y = volatile.acidity), data = mydata) +
+  geom_point(alpha = 1/5) +
+  geom_smooth(method = 'lm', color = 'purple')
+```
+
+```{r echo=FALSE}
+ggplot(aes(x = quality, y = citric.acid), data = mydata) +
+  geom_point(alpha = 1/10) +
+  geom_smooth(method = 'lm', color = 'purple')
+
+```
+
+>I compared quality to the three acidities in seperate scatter plots. This appears to show the preferred ranges for the amount of acids in red wines. Based on the wines that fall in the 5-8 range, which are the higher end of our quality ratings, the acid levels are mostly in the following ranges; fixed acidity is 4 to 14, volatile acidity is .2 to .10, and citric acid is 0 to .75. I tried adding a linear trend line in a different color and it really helped clarify the trends in the plots. The volatile acids trend down, while the citric and fixed acids trend up. 
+
+```{r echo=FALSE}
+ggplot(aes(x = quality, y = residual.sugar), data = mydata) +
+  geom_point(alpha = 1/10) +
+  geom_smooth(method = 'lm', color = 'pink')
+
+```
+
+>This chart does not seem to support that the wines with a little residual sugar are higher rated. The average quality wines appear to be the wines with a slightly higher amount of residual sugar, but then the sugar amounts go back down when we get to the highest rated wines. Red wines are not known for being sweet, but the thinking is that a little sweet is needed to balance out the bitterness from the acids. Surprisingly there are a few wines with much higher residual surgars in the 5-6 quality range. Maybe these wines also have a high acid content. I think ploting residual surgars, acids and quality ratings could provide some insight. Maybe we can find the "sweet spot" of where the amount of acids to sugars seem to be the most preferred. 
+
+```{r echo=FALSE}
+ggplot(aes(x = residual.sugar, y = fixed.acidity), data = mydata) +
+  geom_point(alpha = 1/20)
+
+```
+
+```{r echo=FALSE}
+ggplot(aes(x = residual.sugar, y = volatile.acidity), data = mydata) +
+  geom_point(alpha = 1/20)
+
+```
+
+```{r echo=FALSE}
+ggplot(aes(x = residual.sugar, y = citric.acid), data = mydata) +
+  geom_point(alpha = 1/20) 
+```
+
+>Comparing residual sugar to the acids we can start to see where the wine makers like to keep the balance between bitter and sweet. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = chlorides, y = residual.sugar), data = mydata) +
+  geom_point(alpha = 1/10, fill = I('green'), color = I('black'), shape = 21) 
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = chlorides, y = residual.sugar), data = mydata) +
+  geom_point(alpha = 1/10, fill = I('green'), color = I('black'), shape = 21) +
+  scale_x_continuous(limits = c(0, .15)) 
+
+```
+
+>The ranges for chlorides (salts) to residual sugar in our data set is fairly compact. I zoomed in to get a closer look. The clorides and sugars both mostly stay within a tight area for the majority of the tested wines. This does appear to show that sugars and chlorides might be closely related when creating a flavorful red wine. I also used this plot to again try out adding color to help with readability and aesthetics. Changing the scale does improve the plot, but I don't think the color is adding much here.
+
+```{r echo=FALSE}
+ggplot(aes(x = alcohol, y = residual.sugar), data = mydata) +
+  geom_point(alpha = 1/5) +
+  geom_smooth(method = 'lm', color = 'red')
+
+```
+
+```{r echo=FALSE}
+ggplot(aes(x = alcohol, y = citric.acid), data = mydata) +
+  geom_point(alpha = 1/5) +
+  geom_smooth(method = 'lm', color = 'red')
+
+```
+
+```{r echo=FALSE}
+ggplot(aes(x = alcohol, y = fixed.acidity), data = mydata) +
+  geom_point(alpha = 1/5) +
+  geom_smooth(method = 'lm', color = 'red')
+
+```
+
+```{r echo=FALSE}
+ggplot(aes(x = alcohol, y = volatile.acidity), data = mydata) +
+  geom_point(alpha = 1/5) +
+  geom_smooth(method = 'lm', color = 'red')
+
+```
+
+>I thought higher alcohol content would also mean higher acid and sugar content in the wines. Ploting a comparison of each to alcohol did not support this, with only citric acid showing a slight trend to the higher levels. The comparison to sugar especially did not show a connection at all. 
+
+```{r echo=FALSE}
+ggplot(aes(x = quality, y = alcohol), data = mydata) +
+  geom_point(alpha = 1/5) +
+  geom_smooth(method = 'lm', color = 'blue')
+
+```
+
+>Most of the wines in the data set fall in the 5-7 range for quality with an alcohol content in the midrange of our findings. Although, comparing the alcohol contant of the lowest quality wines to the highest does seem to show a preference for higher alcohol content in a good quality wine. 
+
+```{r echo=FALSE}
+ggplot(aes(x = pH, y = fixed.acidity), data = mydata) +
+  geom_point(alpha = 1/10) +
+  geom_smooth(method = 'lm', color = 'blue')
+
+```
+
+>When ploting pH on a histogram I asked if there would be a trend in pH levels getting higher as the acidity levels got lower because the lower the pH the more tart a liquid tastes. This plot does seem to support this. Next I wonder if the higher quality rated wines would appear at the lower pH/higher acidity area of a plot?
+
+# Bivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the \investigation. How did the feature(s) of interest vary with other features in \the dataset?
+>I compared the three different acids to each other. I did not have any expectations for what the data would show, but was curious if there would be any insight from the comparison. I did not find any new points of interest worth mentioning here.
+
+>The comparison of the three acids to quality ratings provided the results I expected. The volatile acids trended downward as the quality rating increased and the citric and fixed acids trended upward. 
+
+>Residual sugars were low for the poorly and highly rated wines. They were the highest for the average rated wines.  
+
+>Comparing resdiual sugars to the acids showed consistant ranges for how most of the wines in the data set are composed between the sweet and sour flavors. The sugars were in the 2-4 g range and the fixed acids were in the 6-8 g range, volatile acids were in the 0.2-0.8 g range, and citric acids were in the 0.0-0.5g range. 
+
+>The levels of sugars and acids compared to alcohol content did not increase together as expected.
+
+### Did you observe any interesting relationships between the other features \(not the main feature(s) of interest)?
+>Comparing chlorides to sugars showed a very tight relationship. Chlorides are salts so this made sense. The combination of salt with a sweet enhances flavors and is very pleasing to our palates. 
+
+### What was the strongest relationship you found?
+>There is a relationship between quality ratings and alchohol content in this data set. The higher quailty the wine the more alcohol content they tended to have. Alcohol does have an affect on the taste of wine, but I was not expecting this relationship to be so strong.
+
+# Multivariate Plots Section
+
+```{r echo=FALSE, Multivariate_Plots}
+ggplot(mydata, aes(fixed.acidity, residual.sugar)) +
+  geom_point(aes(alpha = 1/50, colour = quality))
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(mydata, aes(fixed.acidity, residual.sugar)) +
+  geom_point(aes(alpha = 1/50, colour = quality)) + 
+  scale_x_continuous(limits = c(4, 14)) +
+  scale_y_continuous(limits = c(0, 10))
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(mydata, aes(fixed.acidity, residual.sugar)) +
+  geom_point(aes (colour = quality)) +
+  scale_x_continuous(limits = c(6, 12)) +
+  scale_y_continuous(limits = c(1, 5))
+
+```
+
+>Adding quality to the plotting of residual sugars and fixed acidity. I thought it would be more clear as to what combination of sweet and tart would be most often considered higher quality. I even zoomed in on the data but it is still hard to find a trend.  
+
+```{r echo=FALSE}
+ggplot(mydata, aes(fixed.acidity, citric.acid)) +
+  geom_point(aes(alpha = 1/50, colour = quality))
+
+```
+
+>As stated previously, good red wine is known for being more tart then sweet. This plot shows that as the citric and fixed acids rise so does the quality rating. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(mydata, aes(chlorides, residual.sugar)) +
+  geom_point(aes (colour = quality, alpha = 1/50)) 
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(mydata, aes(chlorides, residual.sugar)) +
+  geom_point(aes (colour = quality, alpha = 1/50)) +
+  scale_x_continuous(limits = c(0, .15)) +
+  scale_y_continuous(limits = c(1, 8))
+
+```
+
+>This plot is comparing the residual sugar and chlorides (salts) levels while showing the quality of the wines. The plot does appear to support that lower levels of sugar and chlorides are more generally desirable in red wines. 
+
+```{r echo=FALSE}
+ggplot(mydata, aes(fixed.acidity, alcohol)) +
+  geom_point(aes(alpha = 1/50, colour = quality))
+
+```
+
+>Based on this plot the higher quality wines seem to be on the higher end of the combination of fixed acidity and alcohol.
+
+```{r echo=FALSE}
+ggplot(mydata, aes(fixed.acidity, citric.acid)) +
+  geom_point(aes(alpha = 1/100, colour = alcohol))
+
+```
+
+>Generally as the acidity in a wine increased the alcohol content descreased. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(mydata, aes(pH, fixed.acidity)) +
+  geom_point(aes(alpha = 1/100, colour = quality)) +
+  scale_x_continuous(limits = c(3, 4)) +
+  scale_y_continuous(limits = c(4, 14)) 
+
+```
+
+>The plot does support that the higher quality wines are in the higher acidity/lower pH portion of the plot.
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the \investigation. Were there features that strengthened each other in terms of \looking at your feature(s) of interest?
+>Plotting citric and fixed acids did result in showing a trend towards higher quality ratings as the acid amounts increased. 
+
+>As expected residual sugars and chlorides do go hand in hand. The amounts were very tight together on the plot and higher quality wines were on the lower end.
+
+>Also, higher fixed acidity and alcohol content in the wines resulted in better quality rated wines.
+
+### Were there any interesting or surprising interactions between features?
+>I thought there would be a clear correlation between wines with lower residual surgars and higher fixed acidity being considered higher quality. This was not supported by the plot. 
+
+------
+
+# Final Plots and Summary
+
+### Plot One
+```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_One}
+ggplot(aes(x=pH),data = mydata) +
+  geom_histogram(color = 'black', fill = 'lavender') +
+  xlab('Measure of pH') +
+  ylab('Number of Wines') + 
+  ggtitle('Red Wine pH')
+
+```
+
+### Description One
+>The measure of pH shows how acidic or base a liquid is. The scale is 0 to 14 with 7 being neutral. The lower the pH the more tart or sour the liquid tastes. Wine normally falls in a range of 3-4. This plot appears to support this.
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+ggplot(aes(x = residual.sugar, y = fixed.acidity), data = mydata) +
+  geom_point(alpha = 1/5, color = 'black', fill = 'purple', shape = 21) +
+  xlab('Residual Sugar (g / dm^3)') +
+  ylab('Fixed Acidity (tartaric acid - g / dm^3)') + 
+  ggtitle('Preferred Levels of Acidity to Sugar in Red Wine')
+
+```
+
+### Description Two
+>Red wines are known for being more tart than sweet. This plot shows how the range for acidity is larger and higher than the range for sugars. 
+
+### Plot Three
+```{r echo=FALSE, Plot_Three}
+ggplot(mydata, aes(fixed.acidity, citric.acid)) +
+  geom_point(aes(alpha = 1/100, colour = alcohol)) +
+  xlab('Fixed Acidity (tartaric acid - g / dm^3)') +
+  ylab('Citric Acid (g / dm^3)') + 
+  ggtitle('Levels of Acidity Compared to Alcohol Content') +
+  labs(colour = 'Alcohol % by Volume')
+```
+
+### Description Three
+>This plot shows how as the acidity in a wine rises the alcohol volume tends to decrease. 
+
+------
+
+# Reflection
+
+>This was an investigation of the Red Wine Quality data set. I began by running a summary on the data set and then creating histograms on each of the variables. I did this for each variable so I could get a better understanding of the data in the set. I thought it was interesting that on a quality scale of 1-10 most of the wines were rated in the five to six range. None of the wines were rated above an eight or below a three. Also, as I went through each variable I did some independent research to find out what the variables meant for the composition of wine. I found out that acids help preserve but also greatly contribute to a wine's flavor. The volatile acids and citirc acids need to be balanced in a way as to not have too much of an influence on a wines flavor. This left the fixed acids as the favored source of tartness for the wine's taste.
+
+>Next I created several scatter plots to compare the various variables to each other. By comparing the fixed, volatile, and citric acids to the quality raitings I found that as the fixed and citric acid levels went up so did the ratings. But the same was not true of the volatile acids. This made sense because too much of a volatile acid can give a wine a vinegar taste and would be considered a wine fault or spoilage.
+
+>I struggled with the Multivariate plotting. I am new to R and data analytics, so it was a big learning curve trying to tease insites out of the these plots. There were also some theorys I had that were not supported by the data. For example I thought higher alcohol content would also mean higher acid and sugar content in the wines, but the ploting of the data did not back this up. 
+
+>In the future I think the data set could be improved by adding more wines. I thought it strange that there were no wines rated above eight and below three. And that most of the wines fell into the five and six range. Maybe with more wines this could be resolved. An exploration into why the ratings range are so limited could also be interesting. Another idea for the future would be to explore the relationship between sulfite levels and reports of headaches from drinking wine. This is not information that is in the data set now, but would be interesting to explore if added. 
+
+
